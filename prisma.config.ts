@@ -22,9 +22,9 @@ function loadEnvFile(file: string) {
 
 const databaseUrl = env("DATABASE_URL")
 
-if (!databaseUrl.startsWith("file:")) {
+if (!/^postgres(ql)?:\/\//.test(databaseUrl)) {
   throw new Error(
-    'DATABASE_URL must use a SQLite file URL, for example "file:./prisma/dev.db".',
+    'DATABASE_URL must be a PostgreSQL URL, for example "postgresql://user:pass@host:5432/db".',
   )
 }
 

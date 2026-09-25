@@ -26,9 +26,9 @@ const segredoDaSessao = () =>
 const CHECAGENS: Checagem[] = [
   {
     nivel: "erro",
-    quandoFalha: () => !databaseUrl().startsWith("file:"),
+    quandoFalha: () => !/^postgres(ql)?:\/\//.test(databaseUrl()),
     mensagem: () =>
-      'DATABASE_URL deve apontar para um arquivo SQLite, por exemplo "file:./prisma/dev.db".',
+      'DATABASE_URL deve ser uma URL do PostgreSQL, por exemplo "postgresql://user:pass@host:5432/db".',
   },
   {
     nivel: "erro",

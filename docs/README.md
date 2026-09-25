@@ -20,7 +20,7 @@ Projeto full‑stack com **Next.js**.
 ## 🧩 Tech Stack
 
 [![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white&style=for-the-badge)](https://nextjs.org/)
-[![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white&style=for-the-badge)](https://www.sqlite.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white&style=for-the-badge)](https://neon.tech)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white&style=for-the-badge)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB&style=for-the-badge)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white&style=for-the-badge)](https://www.typescriptlang.org/)
@@ -37,7 +37,7 @@ Projeto full‑stack com **Next.js**.
 │  ├─ _actions/       → Server Actions compartilhadas
 │  ├─ _data/          → Carregadores de dados
 │  └─ _components/    → Componentes compartilhados
-├─ prisma/            → Schema, migrações (SQLite) e seed
+├─ prisma/            → Schema, migrações (PostgreSQL) e seed
 ├─ docs/              → PRD e documentação
 ├─ testsprite_tests/  → Plano e relatório de testes E2E (TestSprite)
 ├─ public/            → Arquivos estáticos (imagens, fontes etc.)
@@ -100,7 +100,7 @@ https://www.figma.com/design/KKq1t6YEm0WtAlOJbLLe5h/BarberLaB?node-id=1-9&t=ffjK
 
 - Node.js `^20.19`, `^22.12` ou `>=24`
 - pnpm `10.34.5`
-- SQLite local via Prisma
+- PostgreSQL (Neon) via Prisma
 - Configuração do Google Developer Console para autenticação
 
 ## ⚙️ Configuração local
@@ -112,7 +112,7 @@ https://www.figma.com/design/KKq1t6YEm0WtAlOJbLLe5h/BarberLaB?node-id=1-9&t=ffjK
    pnpm install
    ```
 
-3. Crie o banco SQLite e aplique as migrações:
+3. Aplique as migrações no banco Postgres apontado por `DATABASE_URL`:
 
    ```bash
    pnpm exec prisma migrate deploy
@@ -125,7 +125,7 @@ https://www.figma.com/design/KKq1t6YEm0WtAlOJbLLe5h/BarberLaB?node-id=1-9&t=ffjK
    pnpm dev
    ```
 
-O arquivo do banco será criado em `prisma/dev.db` e não é versionado pelo Git. Para cadastrar dados de demonstração, execute `pnpm exec prisma db seed` — o seed é idempotente (preenche até 10 barbearias com 6 serviços cada e não duplica o que já existe).
+O banco fica no Neon (não há arquivo local versionável); a `DATABASE_URL` é obrigatória até no build — sem ela o `prisma.config.ts` falha de propósito. Para cadastrar dados de demonstração, execute `pnpm exec prisma db seed` — o seed é idempotente (preenche até 10 barbearias com 6 serviços cada e não duplica o que já existe).
 
 ### 🔐 Login de teste (opcional, apenas ambiente local)
 

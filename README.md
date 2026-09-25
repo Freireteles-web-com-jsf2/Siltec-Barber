@@ -1,6 +1,6 @@
 # Siltec-Barber
 
-Sistema SaaS de agendamento online para barbearias — **Next.js 16** (App Router), **Prisma 7** com SQLite, **NextAuth v4** (Google) e **Tailwind CSS v4**.
+Sistema SaaS de agendamento online para barbearias — **Next.js 16** (App Router), **Prisma 7** com **PostgreSQL (Neon)**, **NextAuth v4** (Google) e **Tailwind CSS v4**.
 
 ## 📚 Documentação
 

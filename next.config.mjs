@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url"
 const rootDir = dirname(fileURLToPath(import.meta.url))
 
 const nextConfig = {
-  serverExternalPackages: ["@prisma/adapter-better-sqlite3", "better-sqlite3"],
+  serverExternalPackages: ["@prisma/adapter-neon", "@neondatabase/serverless"],
   turbopack: {
     root: rootDir,
   },

@@ -1,16 +1,16 @@
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3"
+import { PrismaNeonHttp } from "@prisma/adapter-neon"
 import { BookingStatus, PrismaClient, Role } from "@prisma/client"
 
 function createPrismaClient(): PrismaClient {
   const connectionString = process.env.DATABASE_URL?.trim()
 
-  if (!connectionString?.startsWith("file:")) {
+  if (!connectionString || !/^postgres(ql)?:\/\//.test(connectionString)) {
     throw new Error(
-      'DATABASE_URL must use a SQLite file URL, for example "file:./prisma/dev.db".',
+      'DATABASE_URL must be a PostgreSQL URL, for example "postgresql://user:pass@host:5432/db".',
     )
   }
 
-  const adapter = new PrismaBetterSqlite3({ url: connectionString })
+  const adapter = new PrismaNeonHttp(connectionString, {})
   return new PrismaClient({ adapter })
 }
 

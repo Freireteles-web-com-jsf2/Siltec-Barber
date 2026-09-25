@@ -1,4 +1,4 @@
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3"
+import { PrismaNeonHttp } from "@prisma/adapter-neon"
 import { PrismaClient } from "@prisma/client"
 
 declare global {
@@ -15,9 +15,9 @@ function getDatabaseUrl(): string {
     )
   }
 
-  if (!connectionString.startsWith("file:")) {
+  if (!/^postgres(ql)?:\/\//.test(connectionString)) {
     throw new Error(
-      "DATABASE_URL must be a SQLite file URL, for example file:./prisma/dev.db.",
+      "DATABASE_URL must be a PostgreSQL URL, for example postgresql://user:pass@host:5432/db.",
     )
   }
 
@@ -25,7 +25,9 @@ function getDatabaseUrl(): string {
 }
 
 function createPrismaClient(): PrismaClient {
-  const adapter = new PrismaBetterSqlite3({ url: getDatabaseUrl() })
+  // Adapter HTTP do Neon: usa fetch nativo (sem WebSocket/`ws`), adequado a
+  // serverless. O `$transaction` em batch usado no app é suportado por ele.
+  const adapter = new PrismaNeonHttp(getDatabaseUrl(), {})
   return new PrismaClient({ adapter })
 }
 

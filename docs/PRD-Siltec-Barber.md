@@ -23,7 +23,7 @@ O Siltec-Barber é uma aplicação SaaS para descoberta e agendamento de serviç
 
 O domínio é logicamente multi-tenant: usuários, serviços, horários e bloqueios pertencem a uma barbearia. A experiência de marketplace e a operação single-tenant são ativadas por flags de ambiente. Porém, não existe onboarding administrativo autosserviço: a atribuição de `role` e `barbershopId` ainda depende de intervenção manual ou do modo demo.
 
-A implementação atual usa Next.js App Router, React, TypeScript, Server Actions, NextAuth, Prisma e SQLite. A arquitetura é adequada a uma aplicação de instância única com armazenamento persistente. Escalabilidade horizontal segura, múltiplos profissionais por barbearia, pagamento, notificações automáticas e snapshots históricos ainda não fazem parte do escopo entregue.
+A implementação atual usa Next.js App Router, React, TypeScript, Server Actions, NextAuth, Prisma e PostgreSQL gerenciado no Neon (migrado de SQLite em 25/09/2026). A camada de dados é externa à aplicação e comporta múltiplas instâncias; escala horizontal segura, múltiplos profissionais por barbearia, pagamento, notificações automáticas e snapshots históricos ainda não fazem parte do escopo entregue.
 
 ## 2. Contexto e problema
 
@@ -182,7 +182,7 @@ O produto ainda não possui métricas de negócio instrumentadas. Para a próxim
 | SYS-003 | Modo demo                           | Implementado     | `DEMO_MODE=true` + `DEMO_BARBERSHOP_ID` sobrescreve a sessão com papel/loja de admin.                   |
 | SYS-004 | Seed                                | Implementado     | Cria 10 barbearias e 6 serviços por loja, sem usuário admin.                                            |
 | SYS-005 | Diagnóstico de deploy               | Parcial          | `instrumentation.ts` registra avisos; não interrompe a aplicação nem cobre todos os provedores.         |
-| SYS-006 | Persistência SQLite                 | Implementado     | Banco local via PrismaBetterSqlite3; exige armazenamento gravável e persistente.                        |
+| SYS-006 | Persistência PostgreSQL             | Implementado     | Banco gerenciado no Neon via adapter HTTP `PrismaNeonHttp`; independe do armazenamento do host.       |
 | SYS-007 | Análise de bundle                   | Implementado     | `ANALYZE=true` habilita `@next/bundle-analyzer`.                                                        |
 | SYS-008 | Testes automatizados no repositório | Não implementado | Não há `test` script, executor ou suíte versionada.                                                     |
 | SYS-009 | CI                                  | Não implementado | Não foi encontrado workflow de CI versionado.                                                           |
@@ -341,7 +341,7 @@ As demais operações usam Server Actions e funções de servidor; não há API 
 - Avaliações, quantidade de clientes, regiões, satisfação e características das barbearias são valores fixos no código, não dados de uma avaliação real.
 - Não há integração de mapa, geolocalização, filtro por distância, preço, avaliação ou horário.
 - Perfil, 404 e painel usam metadados de noindex; `/bookings` não declara noindex e não há sitemap/robots dedicado.
-- A política de privacidade contém referências históricas a Neon/Vercel que divergem do runtime SQLite atual e devem ser revisadas.
+- A política de privacidade foi escrita quando o runtime era SQLite; com a migração para Neon/Vercel as referências de infraestrutura voltaram a coincidir com o runtime, mas o texto segue pendente de revisão formal (encarregado, retenção e subcontratados).
 - A página de termos descreve regras de cancelamento, pagamento e responsabilidade, mas o sistema não processa pagamento.
 - O analytics do layout é Vercel Speed Insights; não há consentimento/preferências de cookies implementados.
 
@@ -354,7 +354,7 @@ flowchart LR
   C[Cliente] -->|HTTPS| A[Siltec-Barber]
   ADM[Administrador] -->|HTTPS| A
   A -->|OAuth Google| G[Google Identity]
-  A -->|Adapter SQLite| DB[(SQLite persistente)]
+  A -->|Adapter HTTP do Neon| DB[(PostgreSQL no Neon)]
   A -->|Links wa.me| W[WhatsApp]
   A -.->|Speed Insights| V[Vercel Analytics]
 ```
@@ -371,8 +371,8 @@ flowchart TB
   Loaders[Loaders e funções de dados]
   Auth[NextAuth v4 e adapter Prisma]
   Prisma[app/_lib/prisma.ts]
-  Adapter[PrismaBetterSqlite3]
-  SQLite[(SQLite)]
+  Adapter[PrismaNeonHttp]
+  Postgres[(PostgreSQL no Neon)]
   WhatsApp[Links web do WhatsApp]
 
   Browser --> Next
@@ -384,7 +384,7 @@ flowchart TB
   Loaders --> Auth
   Actions --> Prisma
   Loaders --> Prisma
-  Prisma --> Adapter --> SQLite
+  Prisma --> Adapter --> Postgres
   Client --> WhatsApp
 ```
 
@@ -401,8 +401,9 @@ flowchart TB
 | `app/_providers`               | Provedores da aplicação.                                                                            |
 | `app/api/auth/[...nextauth]`   | Handler do NextAuth.                                                                                |
 | `prisma/schema.prisma`         | Fonte do modelo relacional.                                                                         |
-| `prisma/migrations`            | Migrações SQLite ativas.                                                                            |
-| `prisma/migrations-postgresql` | Histórico arquivado; não deve ser aplicado.                                                         |
+| `prisma/migrations`            | Migrações PostgreSQL ativas (baseline `20260925000000_init_postgres`).                            |
+| `prisma/migrations-sqlite`     | Histórico SQLite arquivado; fora do alcance do Prisma.                                             |
+| `prisma/migrations-postgresql` | Histórico arquivado, defasado; não deve ser aplicado.                                              |
 | `proxy.ts`                     | Redirecionamento single-tenant; não é autenticação.                                                 |
 | `instrumentation.ts`           | Diagnóstico de deploy no runtime Node.                                                              |
 
@@ -413,7 +414,7 @@ flowchart TB
 - `requireBarbershopAdmin` é o gate explícito de role e tenant para páginas e actions.
 - Os loaders admin confiam no `barbershopId` recebido e não fazem autenticação por conta própria.
 - Server Actions devem ser tratadas como endpoints públicos: validar sessão, role, tenant e payload em cada operação.
-- Dados de sessão são persistidos no SQLite via adapter do Prisma.
+- Dados de sessão são persistidos no PostgreSQL (Neon) via adapter HTTP do Prisma.
 - O modo demo é uma elevação de privilégio intencional e deve permanecer desligado em produção.
 
 ### 9.5 Fluxo de criação de reserva
@@ -426,7 +427,7 @@ sequenceDiagram
   participant S as Sessão
   participant L as Limitador de requisições
   participant P as Prisma
-  participant DB as SQLite
+  participant DB as PostgreSQL (Neon)
 
   U->>UI: Escolhe serviço, data e horário
   UI->>A: serviceId + Date
@@ -466,9 +467,9 @@ A validação de conflito e o limite de três são operações de verificação 
 | Autenticação           | NextAuth                         | `4.24.15`                                                                                         |
 | Adapter OAuth          | `@auth/prisma-adapter`           | `2.11.3`                                                                                          |
 | ORM                    | Prisma                           | `7.10.0`                                                                                          |
-| Driver de banco        | `@prisma/adapter-better-sqlite3` | `7.10.0`                                                                                          |
-| Driver nativo          | `better-sqlite3`                 | `12.11.1`                                                                                         |
-| Banco                  | SQLite                           | Arquivo local persistente                                                                         |
+| Driver de banco        | `@prisma/adapter-neon`            | `7.10.0`                                                                                          |
+| Driver HTTP            | `@neondatabase/serverless`        | `1.1.0` (via `fetch`, sem WebSocket)                                                              |
+| Banco                  | PostgreSQL (Neon)                 | Postgres gerenciado; `provider = "postgresql"`                                                    |
 | Validação              | Zod                              | `4.5.4`                                                                                           |
 | Datas                  | date-fns                         | `4.4.0`                                                                                           |
 | Calendário             | React Day Picker                 | `9.14.0`                                                                                          |
@@ -624,7 +625,7 @@ erDiagram
 
 | Variável               | Obrigatória/uso        | Observação                                                                                          |
 | ---------------------- | ---------------------- | --------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`         | Obrigatória            | Deve iniciar com `file:`; exemplo `file:./prisma/dev.db`.                                           |
+| `DATABASE_URL`         | Obrigatória            | Deve iniciar com `postgresql://` (o `prisma.config.ts` recusa outros formatos); obrigatória também no build. |
 | `NEXT_AUTH_SECRET`     | Recomendada            | Segredo de 32+ caracteres por política do projeto; o runtime NextAuth também aceita fallback.       |
 | `NEXTAUTH_SECRET`      | Fallback               | Reconhecido pelo NextAuth e pelo diagnóstico, mas não é a variável canônica.                        |
 | `AUTH_SECRET`          | Fallback NextAuth      | Reconhecido pelo NextAuth, mas não pelo diagnóstico local.                                          |
@@ -702,7 +703,7 @@ As verificações são logs informativos; não substituem validação de credenc
 | RNF-005 | Responsividade   | Fluxos principais devem funcionar em celular e desktop.                                               |
 | RNF-006 | Acessibilidade   | Usar rótulos, foco, teclado e semântica; auditoria WCAG ainda não formalizada.                        |
 | RNF-007 | Performance      | Definir limites de orçamento, paginação e consultas; hoje não há SLO formal.                          |
-| RNF-008 | Escalabilidade   | SQLite pressupõe instância única e armazenamento persistente; escala horizontal requer revisão.       |
+| RNF-008 | Escalabilidade   | Banco gerenciado no Neon comporta escala do dado; a aplicação segue sem SLO e com checks não atômicos. |
 | RNF-009 | Disponibilidade  | Definir SLO, monitoramento, backup, restauração e operação de incidente.                              |
 | RNF-010 | Observabilidade  | Adicionar logs estruturados, tracing e relatório de erros; hoje há apenas console/diagnóstico.        |
 | RNF-011 | Manutenibilidade | TypeScript strict, ESLint flat, Prettier e limites de módulo.                                         |
@@ -739,11 +740,11 @@ Não existe script dedicado de typecheck, testes ou formatação.
 
 ### 16.2 Dependência de persistência
 
-O app usa `file:./prisma/dev.db` e um adapter SQLite local. Em produção, o processo precisa de armazenamento gravável e persistente. Em servidor efêmero, o banco pode desaparecer a cada deploy ou reinício.
+O app fala com PostgreSQL gerenciado no Neon através do adapter HTTP `PrismaNeonHttp`. O banco é externo ao processo: não há arquivo local e a persistência não depende do armazenamento do host, o que elimina a perda de dados em servidor efêmero (RISK-003). Como `DATABASE_URL` é validada em `prisma.config.ts`, o build da Vercel falha de propósito se a variável não estiver configurada — configure os Environment Variables antes do primeiro deploy.
 
 ### 16.3 Dependências nativas e build
 
-`next.config.mjs` mantém `@prisma/adapter-better-sqlite3` e `better-sqlite3` como `serverExternalPackages`. O bundle deve preservar esses módulos nativos no ambiente Node.
+`next.config.mjs` mantém `@prisma/adapter-neon` e `@neondatabase/serverless` como `serverExternalPackages`. Não há dependência nativa compilada: o adapter usa `fetch`, então o build não depende de ferramentas de compilação do sistema.
 
 ### 16.4 Ausências operacionais
 
@@ -815,7 +816,7 @@ Validações de código atualmente disponíveis:
 | -------- | ---------: | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | RISK-001 |    Crítica | Conflito e limite de reservas são verificação seguida de inserção               | Reserva duplicada e excedente do limite                              | Transação/lock, restrição de agenda ou migração PostgreSQL.       |
 | RISK-002 |    Crítica | Credencial em texto puro no `opencode.jsonc`                                    | Exposição de MCP/API                                                 | Revogar, rotacionar e usar variável de ambiente.                  |
-| RISK-003 |       Alta | SQLite local em armazenamento não persistente                                   | Perda de dados em deploy/reinício                                    | Volume persistente, backup e restauração testados.                |
+| RISK-003 |       Alta | ~~SQLite local em armazenamento não persistente~~ **resolvido em 25/09** (banco movido para PostgreSQL no Neon) | Perda de dados em deploy/reinício — eliminada | Banco externo ao processo; backup/restauração nativos do Neon.   |
 | RISK-004 |       Alta | Carregadores admin não autorizam                                                | IDOR se alguém chamar loader diretamente                             | `server-only` + controle no limite de dados.                      |
 | RISK-005 |       Alta | Entrada de agenda/limite não é totalmente estrita                               | Datas normalizadas, horários e bloqueios inesperados                 | Refinamentos Zod e canonicalização de `Date`.                     |
 | RISK-006 |       Alta | Serviços inativos aparecem no catálogo                                          | Cliente vê serviço indisponível                                      | Filtrar `isActive=true` em todos os loaders e na disponibilidade. |
@@ -832,7 +833,7 @@ Validações de código atualmente disponíveis:
 | RISK-017 |      Baixa | Tags de busca são heurísticas                                                   | “Popular” não representa demanda real                                | Classificação explícita ou remover tags.                          |
 | RISK-018 |      Baixa | Conteúdo legal sem responsável definido                                         | Risco editorial/LGPD                                                 | Revisão jurídica e responsável de conteúdo.                       |
 | RISK-019 |      Média | Indicadores usam status e preços atuais                                         | Faturamento/ocupação podem não representar a operação real           | Definir semântica financeira, status válidos e snapshots.         |
-| RISK-020 |      Média | Documentação de infraestrutura cita Vercel/Neon enquanto o runtime exige SQLite | Decisões de implantação e privacidade baseadas em arquitetura antiga | Revisar privacidade, metadados e documentação de infraestrutura.  |
+| RISK-020 |      Média | ~~Documentação de infraestrutura cita Vercel/Neon enquanto o runtime exige SQLite~~ **resolvido em 25/09** | Decisões de implantação baseadas em arquitetura antiga — eliminada | Runtime migrado para Neon/Vercel; privacidade segue pendente de revisão formal. |
 | RISK-021 |       Alta | Flag `TEST_LOGIN_ENABLED` não é diagnosticada em produção                       | Bypass silencioso do Google OAuth com senha única compartilhada      | Alerta em `checkDeployment` + checagem de CI/build.               |
 
 ## 19. Roadmap recomendado
@@ -928,3 +929,4 @@ Uma alteração deve:
 | 1.0    | 24/09/2026 | Baseline inicial com visão de produto, requisitos, arquitetura, stack, dados, operação, riscos e roadmap.                                                      |
 | 1.1    | 25/09/2026 | Login de teste (`/login` + flags), seed com 3 contas dedicadas, E2E TestSprite versionado (45 cenários, 95,7%), riscos RISK-014/015/021 e roadmap atualizados. |
 | 1.2    | 25/09/2026 | Login unificado em `/login`: ícone do cabeçalho, gaveta mobile e "Reservar" navegam para a rota (sem dialog); `TEST_LOGIN_ENABLED` passa a proteger só o formulário e o botão Google ficou sempre visível. |
+| 1.3    | 25/09/2026 | Migração SQLite → PostgreSQL (Neon): provider, adapter HTTP `PrismaNeonHttp`, baseline `20260925000000_init_postgres`, seed aplicado, histórico SQLite arquivado. Resolve RISK-003 e RISK-020 e destrava o deploy na Vercel. |
