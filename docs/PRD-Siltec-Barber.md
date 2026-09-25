@@ -8,7 +8,7 @@
 | ---------------------- | ------------------------------------------------------------- |
 | Produto                | Siltec-Barber                                                 |
 | Tipo                   | Aplicação web full-stack de agendamentos para barbearias      |
-| Versão do documento    | 1.1                                                           |
+| Versão do documento    | 1.4                                                           |
 | Data                   | 25/09/2026                                                    |
 | Situação               | Baseline atual; itens futuros aguardam priorização            |
 | Responsável de produto | Não definido no repositório                                   |
@@ -23,7 +23,7 @@ O Siltec-Barber é uma aplicação SaaS para descoberta e agendamento de serviç
 
 O domínio é logicamente multi-tenant: usuários, serviços, horários e bloqueios pertencem a uma barbearia. A experiência de marketplace e a operação single-tenant são ativadas por flags de ambiente. Porém, não existe onboarding administrativo autosserviço: a atribuição de `role` e `barbershopId` ainda depende de intervenção manual ou do modo demo.
 
-A implementação atual usa Next.js App Router, React, TypeScript, Server Actions, NextAuth, Prisma e PostgreSQL gerenciado no Neon (migrado de SQLite em 25/09/2026). A camada de dados é externa à aplicação e comporta múltiplas instâncias; escala horizontal segura, múltiplos profissionais por barbearia, pagamento, notificações automáticas e snapshots históricos ainda não fazem parte do escopo entregue.
+A implementação atual usa Next.js App Router, React, TypeScript, Server Actions, NextAuth, Prisma e PostgreSQL gerenciado no Neon (migrado de SQLite em 25/09/2026), com implantação contínua na Vercel em https://siltec-barber.vercel.app (ver §16.5). A camada de dados é externa à aplicação e comporta múltiplas instâncias; escala horizontal segura, múltiplos profissionais por barbearia, pagamento, notificações automáticas e snapshots históricos ainda não fazem parte do escopo entregue.
 
 ## 2. Contexto e problema
 
@@ -182,7 +182,7 @@ O produto ainda não possui métricas de negócio instrumentadas. Para a próxim
 | SYS-003 | Modo demo                           | Implementado     | `DEMO_MODE=true` + `DEMO_BARBERSHOP_ID` sobrescreve a sessão com papel/loja de admin.                   |
 | SYS-004 | Seed                                | Implementado     | Cria 10 barbearias e 6 serviços por loja, sem usuário admin.                                            |
 | SYS-005 | Diagnóstico de deploy               | Parcial          | `instrumentation.ts` registra avisos; não interrompe a aplicação nem cobre todos os provedores.         |
-| SYS-006 | Persistência PostgreSQL             | Implementado     | Banco gerenciado no Neon via adapter HTTP `PrismaNeonHttp`; independe do armazenamento do host.       |
+| SYS-006 | Persistência PostgreSQL             | Implementado     | Banco gerenciado no Neon via adapter HTTP `PrismaNeonHttp`; independe do armazenamento do host.         |
 | SYS-007 | Análise de bundle                   | Implementado     | `ANALYZE=true` habilita `@next/bundle-analyzer`.                                                        |
 | SYS-008 | Testes automatizados no repositório | Não implementado | Não há `test` script, executor ou suíte versionada.                                                     |
 | SYS-009 | CI                                  | Não implementado | Não foi encontrado workflow de CI versionado.                                                           |
@@ -301,21 +301,21 @@ A tabela usa preço e duração atuais; não representa pagamento realizado nem 
 
 ### 8.1 Rotas do cliente
 
-| Rota                | Responsabilidade                                                                                            |
-| ------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `/`                 | Home, vitrine e entrada single-tenant.                                                                      |
-| `/barbershops`      | Catálogo e busca.                                                                                           |
-| `/barbershops/[id]` | Detalhe, serviços, horários e reserva.                                                                      |
-| `/bookings`         | Reservas futuras e histórico do usuário.                                                                    |
-| `/perfil`           | Dados do usuário autenticado.                                                                               |
+| Rota                | Responsabilidade                                                                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                 | Home, vitrine e entrada single-tenant.                                                                                                                  |
+| `/barbershops`      | Catálogo e busca.                                                                                                                                       |
+| `/barbershops/[id]` | Detalhe, serviços, horários e reserva.                                                                                                                  |
+| `/bookings`         | Reservas futuras e histórico do usuário.                                                                                                                |
+| `/perfil`           | Dados do usuário autenticado.                                                                                                                           |
 | `/login`            | Login unificado: botão Google **sempre** visível (porta do OAuth); formulário de e-mail/senha **apenas para testes** e inerte sem `TEST_LOGIN_ENABLED`. |
-| `/carreiras`        | Conteúdo institucional.                                                                                     |
-| `/parceiros`        | Conteúdo institucional/parcerias.                                                                           |
-| `/contato`          | Informação de contato/WhatsApp.                                                                             |
-| `/sobre`            | Conteúdo institucional.                                                                                     |
-| `/privacidade`      | Informações de privacidade.                                                                                 |
-| `/termos`           | Termos de uso.                                                                                              |
-| `/cookies`          | Explicação de cookies.                                                                                      |
+| `/carreiras`        | Conteúdo institucional.                                                                                                                                 |
+| `/parceiros`        | Conteúdo institucional/parcerias.                                                                                                                       |
+| `/contato`          | Informação de contato/WhatsApp.                                                                                                                         |
+| `/sobre`            | Conteúdo institucional.                                                                                                                                 |
+| `/privacidade`      | Informações de privacidade.                                                                                                                             |
+| `/termos`           | Termos de uso.                                                                                                                                          |
+| `/cookies`          | Explicação de cookies.                                                                                                                                  |
 
 ### 8.2 Rotas administrativas
 
@@ -401,9 +401,9 @@ flowchart TB
 | `app/_providers`               | Provedores da aplicação.                                                                            |
 | `app/api/auth/[...nextauth]`   | Handler do NextAuth.                                                                                |
 | `prisma/schema.prisma`         | Fonte do modelo relacional.                                                                         |
-| `prisma/migrations`            | Migrações PostgreSQL ativas (baseline `20260925000000_init_postgres`).                            |
-| `prisma/migrations-sqlite`     | Histórico SQLite arquivado; fora do alcance do Prisma.                                             |
-| `prisma/migrations-postgresql` | Histórico arquivado, defasado; não deve ser aplicado.                                              |
+| `prisma/migrations`            | Migrações PostgreSQL ativas (baseline `20260925000000_init_postgres`).                              |
+| `prisma/migrations-sqlite`     | Histórico SQLite arquivado; fora do alcance do Prisma.                                              |
+| `prisma/migrations-postgresql` | Histórico arquivado, defasado; não deve ser aplicado.                                               |
 | `proxy.ts`                     | Redirecionamento single-tenant; não é autenticação.                                                 |
 | `instrumentation.ts`           | Diagnóstico de deploy no runtime Node.                                                              |
 
@@ -456,37 +456,37 @@ A validação de conflito e o limite de três são operações de verificação 
 
 ## 10. Stack e dependências
 
-| Camada                 | Tecnologia                       | Versão/estado                                                                                     |
-| ---------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Runtime                | Node.js                          | Faixas do Prisma: `^20.19`, `^22.12` ou `>=24`; preferir `24.15+` para ferramentas de atualização |
-| Gerenciador de pacotes | pnpm                             | `10.34.5`, lockfile v9                                                                            |
-| Framework              | Next.js                          | `16.3.3`                                                                                          |
-| Ambiente de UI         | React                            | `19.2.8`                                                                                          |
-| Linguagem              | TypeScript                       | `5.9.3`, strict/noEmit                                                                            |
-| Roteamento/UI          | Next App Router                  | Server Components, client components e Server Actions                                             |
-| Autenticação           | NextAuth                         | `4.24.15`                                                                                         |
-| Adapter OAuth          | `@auth/prisma-adapter`           | `2.11.3`                                                                                          |
-| ORM                    | Prisma                           | `7.10.0`                                                                                          |
-| Driver de banco        | `@prisma/adapter-neon`            | `7.10.0`                                                                                          |
-| Driver HTTP            | `@neondatabase/serverless`        | `1.1.0` (via `fetch`, sem WebSocket)                                                              |
-| Banco                  | PostgreSQL (Neon)                 | Postgres gerenciado; `provider = "postgresql"`                                                    |
-| Validação              | Zod                              | `4.5.4`                                                                                           |
-| Datas                  | date-fns                         | `4.4.0`                                                                                           |
-| Calendário             | React Day Picker                 | `9.14.0`                                                                                          |
-| Formulários            | React Hook Form                  | `7.87.0`                                                                                          |
-| Estilo                 | Tailwind CSS                     | `4.3.3`, CSS-first                                                                                |
-| Componentes            | shadcn/ui + Radix UI             | Componentes versionados; aliases parcialmente inconsistentes                                      |
-| Ícones                 | Lucide React                     | `0.577.0`                                                                                         |
-| Feedback               | Sonner                           | `2.0.8`                                                                                           |
-| Tour                   | Driver.js                        | `1.8.0`                                                                                           |
-| Progresso              | `@bprogress/next`                | `3.2.12`                                                                                          |
-| Limite de requisições  | `rate-limiter-flexible`          | `11.2.0`                                                                                          |
-| Imagens                | Next Image                       | HTTPS remoto amplo, SVG com anexo/CSP sandbox                                                     |
-| Análise                | `@next/bundle-analyzer`          | `16.3.4`                                                                                          |
-| Observabilidade        | Vercel Speed Insights            | `1.3.1` disponível no pacote                                                                      |
-| Qualidade              | ESLint / Prettier                | `9.39.5` / `3.9.6`                                                                                |
-| Commits                | Husky / git-commit-msg-linter    | `9.1.7` / `5.0.9`, com hook legado de caminho fixo                                                |
-| Testes                 | TestSprite MCP                   | Externo, iniciado via `npx @latest`; sem suíte versionada                                         |
+| Camada                 | Tecnologia                    | Versão/estado                                                                                     |
+| ---------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------- |
+| Runtime                | Node.js                       | Faixas do Prisma: `^20.19`, `^22.12` ou `>=24`; preferir `24.15+` para ferramentas de atualização |
+| Gerenciador de pacotes | pnpm                          | `10.34.5`, lockfile v9                                                                            |
+| Framework              | Next.js                       | `16.3.3`                                                                                          |
+| Ambiente de UI         | React                         | `19.2.8`                                                                                          |
+| Linguagem              | TypeScript                    | `5.9.3`, strict/noEmit                                                                            |
+| Roteamento/UI          | Next App Router               | Server Components, client components e Server Actions                                             |
+| Autenticação           | NextAuth                      | `4.24.15`                                                                                         |
+| Adapter OAuth          | `@auth/prisma-adapter`        | `2.11.3`                                                                                          |
+| ORM                    | Prisma                        | `7.10.0`                                                                                          |
+| Driver de banco        | `@prisma/adapter-neon`        | `7.10.0`                                                                                          |
+| Driver HTTP            | `@neondatabase/serverless`    | `1.1.0` (via `fetch`, sem WebSocket)                                                              |
+| Banco                  | PostgreSQL (Neon)             | Postgres gerenciado; `provider = "postgresql"`                                                    |
+| Validação              | Zod                           | `4.5.4`                                                                                           |
+| Datas                  | date-fns                      | `4.4.0`                                                                                           |
+| Calendário             | React Day Picker              | `9.14.0`                                                                                          |
+| Formulários            | React Hook Form               | `7.87.0`                                                                                          |
+| Estilo                 | Tailwind CSS                  | `4.3.3`, CSS-first                                                                                |
+| Componentes            | shadcn/ui + Radix UI          | Componentes versionados; aliases parcialmente inconsistentes                                      |
+| Ícones                 | Lucide React                  | `0.577.0`                                                                                         |
+| Feedback               | Sonner                        | `2.0.8`                                                                                           |
+| Tour                   | Driver.js                     | `1.8.0`                                                                                           |
+| Progresso              | `@bprogress/next`             | `3.2.12`                                                                                          |
+| Limite de requisições  | `rate-limiter-flexible`       | `11.2.0`                                                                                          |
+| Imagens                | Next Image                    | HTTPS remoto amplo, SVG com anexo/CSP sandbox                                                     |
+| Análise                | `@next/bundle-analyzer`       | `16.3.4`                                                                                          |
+| Observabilidade        | Vercel Speed Insights         | `1.3.1` disponível no pacote                                                                      |
+| Qualidade              | ESLint / Prettier             | `9.39.5` / `3.9.6`                                                                                |
+| Commits                | Husky / git-commit-msg-linter | `9.1.7` / `5.0.9`, com hook legado de caminho fixo                                                |
+| Testes                 | TestSprite MCP                | Externo, iniciado via `npx @latest`; sem suíte versionada                                         |
 
 ## 11. Modelo de dados
 
@@ -623,22 +623,22 @@ erDiagram
 
 ### 13.1 Variáveis
 
-| Variável               | Obrigatória/uso        | Observação                                                                                          |
-| ---------------------- | ---------------------- | --------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`         | Obrigatória            | Deve iniciar com `postgresql://` (o `prisma.config.ts` recusa outros formatos); obrigatória também no build. |
-| `NEXT_AUTH_SECRET`     | Recomendada            | Segredo de 32+ caracteres por política do projeto; o runtime NextAuth também aceita fallback.       |
-| `NEXTAUTH_SECRET`      | Fallback               | Reconhecido pelo NextAuth e pelo diagnóstico, mas não é a variável canônica.                        |
-| `AUTH_SECRET`          | Fallback NextAuth      | Reconhecido pelo NextAuth, mas não pelo diagnóstico local.                                          |
-| `GOOGLE_CLIENT_ID`     | Login Google           | Necessária para autenticação.                                                                       |
-| `GOOGLE_CLIENT_SECRET` | Login Google           | Necessária para autenticação.                                                                       |
-| `NEXTAUTH_URL`         | Produção               | Deve ser pública e não localhost.                                                                   |
-| `SINGLE_BARBERSHOP_ID` | Operação single-tenant | Somente apresentação/redirect; não cria isolamento.                                                 |
-| `DEMO_MODE`            | Demonstração           | `true` exige `DEMO_BARBERSHOP_ID`.                                                                  |
-| `DEMO_BARBERSHOP_ID`   | Demonstração           | Loja que todos os logados administrarão.                                                            |
+| Variável               | Obrigatória/uso        | Observação                                                                                                                                                                   |
+| ---------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`         | Obrigatória            | Deve iniciar com `postgresql://` (o `prisma.config.ts` recusa outros formatos); obrigatória também no build.                                                                 |
+| `NEXT_AUTH_SECRET`     | Recomendada            | Segredo de 32+ caracteres por política do projeto; o runtime NextAuth também aceita fallback.                                                                                |
+| `NEXTAUTH_SECRET`      | Fallback               | Reconhecido pelo NextAuth e pelo diagnóstico, mas não é a variável canônica.                                                                                                 |
+| `AUTH_SECRET`          | Fallback NextAuth      | Reconhecido pelo NextAuth, mas não pelo diagnóstico local.                                                                                                                   |
+| `GOOGLE_CLIENT_ID`     | Login Google           | Necessária para autenticação.                                                                                                                                                |
+| `GOOGLE_CLIENT_SECRET` | Login Google           | Necessária para autenticação.                                                                                                                                                |
+| `NEXTAUTH_URL`         | Produção               | Deve ser pública e não localhost.                                                                                                                                            |
+| `SINGLE_BARBERSHOP_ID` | Operação single-tenant | Somente apresentação/redirect; não cria isolamento.                                                                                                                          |
+| `DEMO_MODE`            | Demonstração           | `true` exige `DEMO_BARBERSHOP_ID`.                                                                                                                                           |
+| `DEMO_BARBERSHOP_ID`   | Demonstração           | Loja que todos os logados administrarão.                                                                                                                                     |
 | `TEST_LOGIN_ENABLED`   | Teste local            | `true` habilita o **formulário de e-mail/senha** da rota `/login` (a página e o botão Google existem com ou sem a flag) e o seed das contas de teste. **Nunca em produção.** |
-| `TEST_LOGIN_PASSWORD`  | Teste local            | Senha única das contas de teste; fica só no `.env.local` (comentada no `.env.example`).             |
-| `ANALYZE`              | Build/análise          | `true` habilita bundle analyzer.                                                                    |
-| `NODE_ENV`             | Runtime                | Usado nas verificações de produção.                                                                 |
+| `TEST_LOGIN_PASSWORD`  | Teste local            | Senha única das contas de teste; fica só no `.env.local` (comentada no `.env.example`).                                                                                      |
+| `ANALYZE`              | Build/análise          | `true` habilita bundle analyzer.                                                                                                                                             |
+| `NODE_ENV`             | Runtime                | Usado nas verificações de produção.                                                                                                                                          |
 
 ### 13.2 Carregamento de env
 
@@ -694,22 +694,22 @@ As verificações são logs informativos; não substituem validação de credenc
 
 ## 15. Requisitos não funcionais
 
-| ID      | Área             | Expectativa                                                                                           |
-| ------- | ---------------- | ----------------------------------------------------------------------------------------------------- |
-| RNF-001 | Segurança        | Nunca permitir que um admin leia/escreva outra loja; validar no limite de cada loader/action.         |
-| RNF-002 | Autenticação     | Sessão no servidor, segredo gerenciado fora do repositório e rotação documentada.                     |
-| RNF-003 | Integridade      | Não aceitar reserva duplicada, limite excedido ou corrupção de agenda sob concorrência.               |
-| RNF-004 | Privacidade      | Proteger e-mail, telefone, tokens OAuth e tokens de sessão no banco/backups.                          |
-| RNF-005 | Responsividade   | Fluxos principais devem funcionar em celular e desktop.                                               |
-| RNF-006 | Acessibilidade   | Usar rótulos, foco, teclado e semântica; auditoria WCAG ainda não formalizada.                        |
-| RNF-007 | Performance      | Definir limites de orçamento, paginação e consultas; hoje não há SLO formal.                          |
+| ID      | Área             | Expectativa                                                                                            |
+| ------- | ---------------- | ------------------------------------------------------------------------------------------------------ |
+| RNF-001 | Segurança        | Nunca permitir que um admin leia/escreva outra loja; validar no limite de cada loader/action.          |
+| RNF-002 | Autenticação     | Sessão no servidor, segredo gerenciado fora do repositório e rotação documentada.                      |
+| RNF-003 | Integridade      | Não aceitar reserva duplicada, limite excedido ou corrupção de agenda sob concorrência.                |
+| RNF-004 | Privacidade      | Proteger e-mail, telefone, tokens OAuth e tokens de sessão no banco/backups.                           |
+| RNF-005 | Responsividade   | Fluxos principais devem funcionar em celular e desktop.                                                |
+| RNF-006 | Acessibilidade   | Usar rótulos, foco, teclado e semântica; auditoria WCAG ainda não formalizada.                         |
+| RNF-007 | Performance      | Definir limites de orçamento, paginação e consultas; hoje não há SLO formal.                           |
 | RNF-008 | Escalabilidade   | Banco gerenciado no Neon comporta escala do dado; a aplicação segue sem SLO e com checks não atômicos. |
-| RNF-009 | Disponibilidade  | Definir SLO, monitoramento, backup, restauração e operação de incidente.                              |
-| RNF-010 | Observabilidade  | Adicionar logs estruturados, tracing e relatório de erros; hoje há apenas console/diagnóstico.        |
-| RNF-011 | Manutenibilidade | TypeScript strict, ESLint flat, Prettier e limites de módulo.                                         |
-| RNF-012 | Compatibilidade  | Suportar o Node/Next versionados e documentar breaking changes do framework.                          |
-| RNF-013 | Localização      | Interface e moeda em pt-BR/BRL; fuso horário de negócio ainda precisa ser definido.                   |
-| RNF-014 | Testabilidade    | E2E com TestSprite versionado (45 cenários, 95,7% aprovados); faltam suíte unitária, integração e CI. |
+| RNF-009 | Disponibilidade  | Definir SLO, monitoramento, backup, restauração e operação de incidente.                               |
+| RNF-010 | Observabilidade  | Adicionar logs estruturados, tracing e relatório de erros; hoje há apenas console/diagnóstico.         |
+| RNF-011 | Manutenibilidade | TypeScript strict, ESLint flat, Prettier e limites de módulo.                                          |
+| RNF-012 | Compatibilidade  | Suportar o Node/Next versionados e documentar breaking changes do framework.                           |
+| RNF-013 | Localização      | Interface e moeda em pt-BR/BRL; fuso horário de negócio ainda precisa ser definido.                    |
+| RNF-014 | Testabilidade    | E2E com TestSprite versionado (45 cenários, 95,7% aprovados); faltam suíte unitária, integração e CI.  |
 
 ## 16. Operação, build e deploy
 
@@ -740,7 +740,7 @@ Não existe script dedicado de typecheck, testes ou formatação.
 
 ### 16.2 Dependência de persistência
 
-O app fala com PostgreSQL gerenciado no Neon através do adapter HTTP `PrismaNeonHttp`. O banco é externo ao processo: não há arquivo local e a persistência não depende do armazenamento do host, o que elimina a perda de dados em servidor efêmero (RISK-003). Como `DATABASE_URL` é validada em `prisma.config.ts`, o build da Vercel falha de propósito se a variável não estiver configurada — configure os Environment Variables antes do primeiro deploy.
+O app fala com PostgreSQL gerenciado no Neon através do adapter HTTP `PrismaNeonHttp`. O banco é externo ao processo: não há arquivo local e a persistência não depende do armazenamento do host, o que elimina a perda de dados em servidor efêmero (RISK-003). Como `DATABASE_URL` é validada em `prisma.config.ts`, o build da Vercel falha de propósito se a variável não estiver configurada — configure os Environment Variables antes do primeiro deploy. Na prática isso já foi exercido: na implantação de 25/09/2026, três builds falharam em ~30 s com `PrismaConfigEnvError` enquanto `DATABASE_URL` estava sem valor aplicado, e o deploy passou assim que a variável foi gravada (ver §16.5).
 
 ### 16.3 Dependências nativas e build
 
@@ -760,6 +760,30 @@ Não foram encontrados no escopo atual:
 - Estratégia oficial de rollback.
 
 Essas ausências não impedem o deploy local, mas devem ser tratadas como decisões operacionais explícitas.
+
+### 16.5 Implantação em produção (Vercel)
+
+Em 25/09/2026 a aplicação foi implantada e validada de ponta a ponta em **https://siltec-barber.vercel.app**:
+
+| Item           | Configuração                                                                                                                                                                                          |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hospedagem     | Vercel — projeto `siltec-barber`, equipe `luciano-teles-freires-projects`, deploy automático da branch `main` (GitHub App conectado)                                                                  |
+| Banco          | Neon (PostgreSQL) — mesmo banco do ambiente local; baseline `20260925000000_init_postgres` já aplicada                                                                                                |
+| `NEXTAUTH_URL` | `https://siltec-barber.vercel.app`                                                                                                                                                                    |
+| Segredo        | `NEXT_AUTH_SECRET` gerado exclusivamente para produção (distinto do local)                                                                                                                            |
+| OAuth Google   | Client `Cliente Web Barber` (projeto Cloud `siltec-braber`) com as duas redirect URIs: `http://localhost:3000/api/auth/callback/google` e `https://siltec-barber.vercel.app/api/auth/callback/google` |
+
+**Comportamento das variáveis na Vercel:** as cinco variáveis (`DATABASE_URL`, `NEXT_AUTH_SECRET`, `NEXTAUTH_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`) são do tipo _sensitive_ — o valor é gravável, mas ilegível de volta (nem a API devolve o conteúdo). Alterações só se aplicam a **novos deployments**; depois de editar, faça um _Redeploy_. A integração Neon cria ainda um conjunto de variáveis `silecbarber_*` que o app **não** utiliza (ele lê apenas `DATABASE_URL`).
+
+**Checklist de produção:**
+
+- [x] Build verde na Vercel (`Ready` em ~1,5 min após a correção das env vars).
+- [x] Home servindo os dados do Neon (15 barbearias do seed).
+- [x] `/login` sem formulário de teste (`TEST_LOGIN_ENABLED` ausente na Vercel) e com botão Google visível.
+- [x] Login Google completo: consentimento → callback → sessão persistente no Neon.
+- [ ] `TEST_LOGIN_ENABLED`, `TEST_LOGIN_PASSWORD` e `DEMO_MODE` **nunca** configuradas na Vercel (RISK-021 — `checkDeployment` não as diagnostica).
+
+Validação de credenciais: sem a redirect URI de produção o Google responde `redirect_uri_mismatch`; sem `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` o NextAuth devolve `error=google` ao iniciar o fluxo. O diagnostic do `instrumentation.ts` continua sendo apenas informativo (SYS-005).
 
 ## 17. Estratégia de testes
 
@@ -812,29 +836,29 @@ Validações de código atualmente disponíveis:
 
 ## 18. Riscos e dívida técnica
 
-| ID       | Severidade | Risco                                                                           | Impacto                                                              | Mitigação recomendada                                             |
-| -------- | ---------: | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| RISK-001 |    Crítica | Conflito e limite de reservas são verificação seguida de inserção               | Reserva duplicada e excedente do limite                              | Transação/lock, restrição de agenda ou migração PostgreSQL.       |
-| RISK-002 |    Crítica | Credencial em texto puro no `opencode.jsonc`                                    | Exposição de MCP/API                                                 | Revogar, rotacionar e usar variável de ambiente.                  |
-| RISK-003 |       Alta | ~~SQLite local em armazenamento não persistente~~ **resolvido em 25/09** (banco movido para PostgreSQL no Neon) | Perda de dados em deploy/reinício — eliminada | Banco externo ao processo; backup/restauração nativos do Neon.   |
-| RISK-004 |       Alta | Carregadores admin não autorizam                                                | IDOR se alguém chamar loader diretamente                             | `server-only` + controle no limite de dados.                      |
-| RISK-005 |       Alta | Entrada de agenda/limite não é totalmente estrita                               | Datas normalizadas, horários e bloqueios inesperados                 | Refinamentos Zod e canonicalização de `Date`.                     |
-| RISK-006 |       Alta | Serviços inativos aparecem no catálogo                                          | Cliente vê serviço indisponível                                      | Filtrar `isActive=true` em todos os loaders e na disponibilidade. |
-| RISK-007 |       Alta | Edições admin não revalidam agenda                                              | Duração/horário/status inconsistentes                                | Transação, rechecagem e auditoria de impacto.                     |
-| RISK-008 |       Alta | Cancelamento é hard delete e sem snapshot                                       | Perda de histórico e inconsistência financeira                       | Campo de cancelamento, auditoria e snapshots.                     |
-| RISK-009 |      Média | Fuso horário não persistido                                                     | Mudança de host/deslocamento altera agenda                           | Persistir fuso IANA e normalizar instantes.                       |
-| RISK-010 |      Média | Sem profissional/barbeiro                                                       | Uma única capacidade por loja                                        | Modelar Recurso/Provedor e políticas.                             |
-| RISK-011 |      Média | `x-forwarded-for` confiado sem limite de proxy                                  | Limite de requisições pode ser contornado                            | Definir proxies confiáveis e derivar IP seguro.                   |
-| RISK-012 |      Média | Revalidação manual incompleta                                                   | Interface com dados desatualizados                                   | Centralizar tags/caminhos e testar após mutações.                 |
-| RISK-013 |      Média | Single-tenant é apenas apresentação                                             | Cabeçalho/rota podem expor catálogo redirecionado                    | Tornar a política consistente ou remover o modo.                  |
-| RISK-014 |      Média | Sem CI e sem testes unitários; o E2E TestSprite roda fora do pipeline           | Regressões em regras críticas passam despercebidas                   | Pipeline com lint/typecheck/E2E e suíte unitária de agenda.       |
-| RISK-015 |      Baixa | Seed não é transacional (barbearias/usuários já são idempotentes)               | Falha no meio da execução deixa estado parcial                       | Execução transacional ou retomada por etapas.                     |
-| RISK-016 |      Baixa | Ferramentas duplicadas e hook legado                                            | Commits podem falhar após atualização                                | Consolidar lint-staged e atualizar hook.                          |
-| RISK-017 |      Baixa | Tags de busca são heurísticas                                                   | “Popular” não representa demanda real                                | Classificação explícita ou remover tags.                          |
-| RISK-018 |      Baixa | Conteúdo legal sem responsável definido                                         | Risco editorial/LGPD                                                 | Revisão jurídica e responsável de conteúdo.                       |
-| RISK-019 |      Média | Indicadores usam status e preços atuais                                         | Faturamento/ocupação podem não representar a operação real           | Definir semântica financeira, status válidos e snapshots.         |
-| RISK-020 |      Média | ~~Documentação de infraestrutura cita Vercel/Neon enquanto o runtime exige SQLite~~ **resolvido em 25/09** | Decisões de implantação baseadas em arquitetura antiga — eliminada | Runtime migrado para Neon/Vercel; privacidade segue pendente de revisão formal. |
-| RISK-021 |       Alta | Flag `TEST_LOGIN_ENABLED` não é diagnosticada em produção                       | Bypass silencioso do Google OAuth com senha única compartilhada      | Alerta em `checkDeployment` + checagem de CI/build.               |
+| ID       | Severidade | Risco                                                                                                           | Impacto                                                            | Mitigação recomendada                                                           |
+| -------- | ---------: | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| RISK-001 |    Crítica | Conflito e limite de reservas são verificação seguida de inserção                                               | Reserva duplicada e excedente do limite                            | Transação/lock, restrição de agenda ou migração PostgreSQL.                     |
+| RISK-002 |    Crítica | Credencial em texto puro no `opencode.jsonc`                                                                    | Exposição de MCP/API                                               | Revogar, rotacionar e usar variável de ambiente.                                |
+| RISK-003 |       Alta | ~~SQLite local em armazenamento não persistente~~ **resolvido em 25/09** (banco movido para PostgreSQL no Neon) | Perda de dados em deploy/reinício — eliminada                      | Banco externo ao processo; backup/restauração nativos do Neon.                  |
+| RISK-004 |       Alta | Carregadores admin não autorizam                                                                                | IDOR se alguém chamar loader diretamente                           | `server-only` + controle no limite de dados.                                    |
+| RISK-005 |       Alta | Entrada de agenda/limite não é totalmente estrita                                                               | Datas normalizadas, horários e bloqueios inesperados               | Refinamentos Zod e canonicalização de `Date`.                                   |
+| RISK-006 |       Alta | Serviços inativos aparecem no catálogo                                                                          | Cliente vê serviço indisponível                                    | Filtrar `isActive=true` em todos os loaders e na disponibilidade.               |
+| RISK-007 |       Alta | Edições admin não revalidam agenda                                                                              | Duração/horário/status inconsistentes                              | Transação, rechecagem e auditoria de impacto.                                   |
+| RISK-008 |       Alta | Cancelamento é hard delete e sem snapshot                                                                       | Perda de histórico e inconsistência financeira                     | Campo de cancelamento, auditoria e snapshots.                                   |
+| RISK-009 |      Média | Fuso horário não persistido                                                                                     | Mudança de host/deslocamento altera agenda                         | Persistir fuso IANA e normalizar instantes.                                     |
+| RISK-010 |      Média | Sem profissional/barbeiro                                                                                       | Uma única capacidade por loja                                      | Modelar Recurso/Provedor e políticas.                                           |
+| RISK-011 |      Média | `x-forwarded-for` confiado sem limite de proxy                                                                  | Limite de requisições pode ser contornado                          | Definir proxies confiáveis e derivar IP seguro.                                 |
+| RISK-012 |      Média | Revalidação manual incompleta                                                                                   | Interface com dados desatualizados                                 | Centralizar tags/caminhos e testar após mutações.                               |
+| RISK-013 |      Média | Single-tenant é apenas apresentação                                                                             | Cabeçalho/rota podem expor catálogo redirecionado                  | Tornar a política consistente ou remover o modo.                                |
+| RISK-014 |      Média | Sem CI e sem testes unitários; o E2E TestSprite roda fora do pipeline                                           | Regressões em regras críticas passam despercebidas                 | Pipeline com lint/typecheck/E2E e suíte unitária de agenda.                     |
+| RISK-015 |      Baixa | Seed não é transacional (barbearias/usuários já são idempotentes)                                               | Falha no meio da execução deixa estado parcial                     | Execução transacional ou retomada por etapas.                                   |
+| RISK-016 |      Baixa | Ferramentas duplicadas e hook legado                                                                            | Commits podem falhar após atualização                              | Consolidar lint-staged e atualizar hook.                                        |
+| RISK-017 |      Baixa | Tags de busca são heurísticas                                                                                   | “Popular” não representa demanda real                              | Classificação explícita ou remover tags.                                        |
+| RISK-018 |      Baixa | Conteúdo legal sem responsável definido                                                                         | Risco editorial/LGPD                                               | Revisão jurídica e responsável de conteúdo.                                     |
+| RISK-019 |      Média | Indicadores usam status e preços atuais                                                                         | Faturamento/ocupação podem não representar a operação real         | Definir semântica financeira, status válidos e snapshots.                       |
+| RISK-020 |      Média | ~~Documentação de infraestrutura cita Vercel/Neon enquanto o runtime exige SQLite~~ **resolvido em 25/09**      | Decisões de implantação baseadas em arquitetura antiga — eliminada | Runtime migrado para Neon/Vercel; privacidade segue pendente de revisão formal. |
+| RISK-021 |       Alta | Flag `TEST_LOGIN_ENABLED` não é diagnosticada em produção                                                       | Bypass silencioso do Google OAuth com senha única compartilhada    | Alerta em `checkDeployment` + checagem de CI/build.                             |
 
 ## 19. Roadmap recomendado
 
@@ -845,8 +869,8 @@ Validações de código atualmente disponíveis:
 3. **Filtrar serviços inativos** em catálogo, busca, detalhe e disponibilidade.
 4. **Endurecer validação de agenda** para `Date`, dias da semana, segundos e bloqueios.
 5. **Resolver concorrência** de reservas e limite com transação/lock ou banco com suporte a restrições.
-6. **Definir backup/restauração** e confirmar armazenamento persistente em produção.
-7. **Alertar se `TEST_LOGIN_ENABLED` estiver ativo em produção** (`checkDeployment`) — RISK-021.
+6. ~~Definir backup/restauração e confirmar armazenamento persistente em produção~~ — armazenamento confirmado: produção na Vercel usa banco Neon gerenciado (backups nativos do provedor); falta formalizar política de retenção/teste de restauração.
+7. **Alertar se `TEST_LOGIN_ENABLED` estiver ativo em produção** (`checkDeployment`) — RISK-021; ganha urgência com a Vercel no ar, pois a flag não é monitorada em nenhum ambiente.
 
 ### P1 — produto e operação
 
@@ -861,7 +885,7 @@ Validações de código atualmente disponíveis:
 
 ### P2 — evolução
 
-1. Migrar para PostgreSQL quando multiplicidade/escala justificar.
+1. ~~Migrar para PostgreSQL~~ **concluído em 25/09/2026** (Neon + adapter HTTP `PrismaNeonHttp`), em operação na Vercel — ver §16.5.
 2. WhatsApp API/e-mail com templates, opt-out e retry.
 3. Pagamentos, política de cancelamento, depósito e reembolso.
 4. Fidelidade, promoções, cupons e indicações.
@@ -924,9 +948,10 @@ Uma alteração deve:
 
 ## 23. Histórico de alterações
 
-| Versão | Data       | Alteração                                                                                                                                                      |
-| ------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.0    | 24/09/2026 | Baseline inicial com visão de produto, requisitos, arquitetura, stack, dados, operação, riscos e roadmap.                                                      |
-| 1.1    | 25/09/2026 | Login de teste (`/login` + flags), seed com 3 contas dedicadas, E2E TestSprite versionado (45 cenários, 95,7%), riscos RISK-014/015/021 e roadmap atualizados. |
-| 1.2    | 25/09/2026 | Login unificado em `/login`: ícone do cabeçalho, gaveta mobile e "Reservar" navegam para a rota (sem dialog); `TEST_LOGIN_ENABLED` passa a proteger só o formulário e o botão Google ficou sempre visível. |
-| 1.3    | 25/09/2026 | Migração SQLite → PostgreSQL (Neon): provider, adapter HTTP `PrismaNeonHttp`, baseline `20260925000000_init_postgres`, seed aplicado, histórico SQLite arquivado. Resolve RISK-003 e RISK-020 e destrava o deploy na Vercel. |
+| Versão | Data       | Alteração                                                                                                                                                                                                                                            |
+| ------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0    | 24/09/2026 | Baseline inicial com visão de produto, requisitos, arquitetura, stack, dados, operação, riscos e roadmap.                                                                                                                                            |
+| 1.1    | 25/09/2026 | Login de teste (`/login` + flags), seed com 3 contas dedicadas, E2E TestSprite versionado (45 cenários, 95,7%), riscos RISK-014/015/021 e roadmap atualizados.                                                                                       |
+| 1.2    | 25/09/2026 | Login unificado em `/login`: ícone do cabeçalho, gaveta mobile e "Reservar" navegam para a rota (sem dialog); `TEST_LOGIN_ENABLED` passa a proteger só o formulário e o botão Google ficou sempre visível.                                           |
+| 1.3    | 25/09/2026 | Migração SQLite → PostgreSQL (Neon): provider, adapter HTTP `PrismaNeonHttp`, baseline `20260925000000_init_postgres`, seed aplicado, histórico SQLite arquivado. Resolve RISK-003 e RISK-020 e destrava o deploy na Vercel.                         |
+| 1.4    | 25/09/2026 | Implantação na Vercel (`siltec-barber.vercel.app`): env vars do projeto gravadas como _sensitive_, deploy verde, redirect URIs do Google cadastradas e login OAuth validado de ponta a ponta. Nova §16.5 com a configuração de produção e checklist. |

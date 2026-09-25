@@ -22,8 +22,13 @@ pnpm dev
 
 Copie `.env.example` para `.env.local` e configure as credenciais do Google — ou habilite o **login de teste** (`TEST_LOGIN_ENABLED`) para desenvolver sem o OAuth. Instruções em [docs/README.md](docs/README.md).
 
+## 🌐 Produção
+
+**<https://siltec-barber.vercel.app>** — deploy automático da branch `main` na Vercel, banco PostgreSQL no Neon e login com Google OAuth validado de ponta a ponta (25/09/2026). Variáveis de ambiente e redirect URIs: [docs/README.md](docs/README.md).
+
 ## ✅ Status
 
+- **Produção:** no ar na Vercel desde 25/09/2026 — build, dados do Neon e fluxo completo de login Google verificados no domínio definitivo.
 - **E2E (TestSprite):** 45 cenários planejados; 23 executados em 24–25/09/2026 com **22 aprovados (95,7%)**, cobrindo cliente, páginas públicas e todo o painel admin.
 - **Pendências conhecidas:** TC013 (sessão client-side defasada pós-login), TC001 (asserção fraca), ausência de suíte unitária/CI — detalhes no [PRD §17–19](docs/PRD-Siltec-Barber.md).
 

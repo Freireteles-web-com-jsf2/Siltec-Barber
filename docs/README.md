@@ -146,6 +146,43 @@ Com a flag ligada, o seed cria 3 contas de teste e o formulário de e-mail/senha
 
 ⚠️ Nunca habilite `TEST_LOGIN_ENABLED` em produção: a action é inerte sem a flag, mas não tem rate limit próprio e é um bypass do Google OAuth. A flag apenas esconde/exibe o formulário — ela não é o que protege a action. Mais detalhes no [PRD §13](./PRD-Siltec-Barber.md).
 
+## 🌐 Produção (Vercel + Neon)
+
+Aplicação em execução: **<https://siltec-barber.vercel.app>**
+
+| Item         | Valor                                                                                                          |
+| ------------ | -------------------------------------------------------------------------------------------------------------- |
+| Hospedagem   | Vercel — projeto `siltec-barber` (equipe `luciano-teles-freires-projects`), deploy automático da branch `main` |
+| Repositório  | GitHub — `Freireteles-web-com-jsf2/Siltec-Barber`                                                              |
+| Banco        | Neon (PostgreSQL) — mesmo banco do ambiente local                                                              |
+| Domínio      | `siltec-barber.vercel.app`                                                                                     |
+| Autenticação | Google OAuth — client `Cliente Web Barber` no projeto Cloud `siltec-braber`                                    |
+
+### Variáveis de ambiente na Vercel
+
+O projeto tem 5 variáveis configuradas (tipo **sensitive**, graváveis mas não legíveis de volta): `DATABASE_URL`, `NEXT_AUTH_SECRET`, `NEXTAUTH_URL`, `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET`. Três cuidados:
+
+1. **Alterações só valem para novos deployments** — depois de editar uma variável, faça um _Redeploy_.
+2. **Sem `DATABASE_URL` o build falha de propósito** no `pnpm install` (`prepare` → `prisma generate` → `PrismaConfigEnvError`), em ~30 s.
+3. **Nunca** defina `TEST_LOGIN_ENABLED`, `TEST_LOGIN_PASSWORD` ou `DEMO_MODE` na Vercel (RISK-021). As variáveis `silecbarber_*` vêm da integração Neon e são ignoradas pelo app — ele lê apenas `DATABASE_URL`.
+
+### Redirect URIs do Google
+
+Cadastradas no Console do Google (APIs e serviços → Credenciais → _Cliente Web Barber_):
+
+```text
+http://localhost:3000/api/auth/callback/google
+https://siltec-barber.vercel.app/api/auth/callback/google
+```
+
+Sem a URI de produção o login falha com `redirect_uri_mismatch`. O Google avisa que a propagação pode levar de 5 minutos a algumas horas.
+
+### Fluxo de deploy
+
+1. Push na branch `main` → a Vercel instala dependências (`pnpm install`, que roda `prepare`), executa `next build` e publica.
+2. Mudanças de schema exigem `pnpm exec prisma migrate deploy` no banco (Neon) **antes** do deploy que usa o schema novo.
+3. O seed (`prisma db seed`) foi executado uma única vez no Neon; não reexecute em banco compartilhado com a flag de teste ligada.
+
 ## ✅ Verificações
 
 ```bash
