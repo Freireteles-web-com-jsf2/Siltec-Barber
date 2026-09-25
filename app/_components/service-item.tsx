@@ -30,8 +30,7 @@ import {
   isClosedOn,
   type OpeningHourSlot,
 } from "../_lib/opening-hours"
-import { Dialog, DialogContent } from "./ui/dialog"
-import SignInDialog from "./sign-in-dialog"
+import { useRouter } from "next/navigation"
 import BookingSummary from "./booking-summary"
 import {
   buildCustomerConfirmationMessage,
@@ -81,7 +80,7 @@ const getTimeList = ({
 
 const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
   const { data } = useSession()
-  const [signInDialogIsOpen, setSignInDialogIsOpen] = useState(false)
+  const router = useRouter()
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined)
   const [selectedTime, setSelectedTime] = useState<string | undefined>(
     undefined,
@@ -127,7 +126,7 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
     if (data?.user) {
       return setBookingSheetIsOpen(true)
     }
-    return setSignInDialogIsOpen(true)
+    return router.push("/login")
   }
 
   const handleBookingSheetOpenChange = () => {
@@ -354,15 +353,6 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
           </div>
         </CardContent>
       </Card>
-
-      <Dialog
-        open={signInDialogIsOpen}
-        onOpenChange={(open) => setSignInDialogIsOpen(open)}
-      >
-        <DialogContent className="w-[90%]">
-          <SignInDialog />
-        </DialogContent>
-      </Dialog>
     </>
   )
 }

@@ -308,7 +308,7 @@ A tabela usa preço e duração atuais; não representa pagamento realizado nem 
 | `/barbershops/[id]` | Detalhe, serviços, horários e reserva.                                                                      |
 | `/bookings`         | Reservas futuras e histórico do usuário.                                                                    |
 | `/perfil`           | Dados do usuário autenticado.                                                                               |
-| `/login`            | Login por e-mail/senha **apenas para testes**; inerte sem `TEST_LOGIN_ENABLED` (produção usa Google OAuth). |
+| `/login`            | Login unificado: botão Google **sempre** visível (porta do OAuth); formulário de e-mail/senha **apenas para testes** e inerte sem `TEST_LOGIN_ENABLED`. |
 | `/carreiras`        | Conteúdo institucional.                                                                                     |
 | `/parceiros`        | Conteúdo institucional/parcerias.                                                                           |
 | `/contato`          | Informação de contato/WhatsApp.                                                                             |
@@ -634,7 +634,7 @@ erDiagram
 | `SINGLE_BARBERSHOP_ID` | Operação single-tenant | Somente apresentação/redirect; não cria isolamento.                                                 |
 | `DEMO_MODE`            | Demonstração           | `true` exige `DEMO_BARBERSHOP_ID`.                                                                  |
 | `DEMO_BARBERSHOP_ID`   | Demonstração           | Loja que todos os logados administrarão.                                                            |
-| `TEST_LOGIN_ENABLED`   | Teste local            | `true` habilita a rota `/login` (e-mail/senha) e o seed das contas de teste. **Nunca em produção.** |
+| `TEST_LOGIN_ENABLED`   | Teste local            | `true` habilita o **formulário de e-mail/senha** da rota `/login` (a página e o botão Google existem com ou sem a flag) e o seed das contas de teste. **Nunca em produção.** |
 | `TEST_LOGIN_PASSWORD`  | Teste local            | Senha única das contas de teste; fica só no `.env.local` (comentada no `.env.example`).             |
 | `ANALYZE`              | Build/análise          | `true` habilita bundle analyzer.                                                                    |
 | `NODE_ENV`             | Runtime                | Usado nas verificações de produção.                                                                 |
@@ -675,7 +675,7 @@ As verificações são logs informativos; não substituem validação de credenc
 - Zod em várias actions administrativas.
 - Valores de preço convertidos explicitamente de Decimal.
 - Nomes de usuário e conteúdo renderizados pelo React/Next.
-- Rota de teste `/login`: action inerte (redireciona) quando `TEST_LOGIN_ENABLED` não é `true`; senha comparada por hash SHA-256 com `timingSafeEqual`; cria sessão no mesmo formato do NextAuth (estratégia database).
+- Rota de teste `/login`: action inerte (redireciona) quando `TEST_LOGIN_ENABLED` não é `true`; senha comparada por hash SHA-256 com `timingSafeEqual`; cria sessão no mesmo formato do NextAuth (estratégia database). A página é renderizada sempre (`dynamic = "force-dynamic"`, flag lida em runtime) e protege **só o formulário**; o botão Google é o único ponto da interface que chama `signIn("google")`.
 
 ### 14.2 Controles ausentes ou incompletos
 
@@ -782,7 +782,7 @@ Não há suíte de testes unitários ou de integração, nem pipeline de CI. O E
 | Bloqueados                | 0 (o bloqueio original do TC018 foi resolvido)    |
 | Cobertura                 | Cliente/público + as 4 telas do painel admin      |
 
-A autenticação nos testes usa a rota de teste `/login` com três contas criadas pelo seed sob `TEST_LOGIN_ENABLED`: `cliente@teste.dev` (3 reservas), `vazio@teste.dev` (zero reservas — estado vazio) e `admin@teste.dev` (painel). Achados de qualidade registrados no relatório: TC001 é provável falso-positivo por asserção fraca, `deleteBooking` faz hard delete (RISK-008) e o fluxo de credenciais não tem link no diálogo de login Google.
+A autenticação nos testes usa a rota de teste `/login` com três contas criadas pelo seed sob `TEST_LOGIN_ENABLED`: `cliente@teste.dev` (3 reservas), `vazio@teste.dev` (zero reservas — estado vazio) e `admin@teste.dev` (painel). Achados de qualidade registrados no relatório: TC001 é provável falso-positivo por asserção fraca e `deleteBooking` faz hard delete (RISK-008); o achado "diálogo de login sem acesso às credenciais" foi resolvido ao unificar os pontos de entrada da autenticação em `/login`.
 
 Validações de código atualmente disponíveis:
 
@@ -927,3 +927,4 @@ Uma alteração deve:
 | ------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1.0    | 24/09/2026 | Baseline inicial com visão de produto, requisitos, arquitetura, stack, dados, operação, riscos e roadmap.                                                      |
 | 1.1    | 25/09/2026 | Login de teste (`/login` + flags), seed com 3 contas dedicadas, E2E TestSprite versionado (45 cenários, 95,7%), riscos RISK-014/015/021 e roadmap atualizados. |
+| 1.2    | 25/09/2026 | Login unificado em `/login`: ícone do cabeçalho, gaveta mobile e "Reservar" navegam para a rota (sem dialog); `TEST_LOGIN_ENABLED` passa a proteger só o formulário e o botão Google ficou sempre visível. |

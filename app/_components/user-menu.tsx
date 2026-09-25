@@ -3,10 +3,9 @@
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { UserIcon } from "lucide-react"
-import SignInDialog from "./sign-in-dialog"
+import Link from "next/link"
 import { Button } from "./ui/button"
 import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover"
-import { Dialog, DialogTrigger, DialogContent } from "./ui/dialog"
 import UserInfo from "./user-info"
 
 const UserMenu = () => {
@@ -27,12 +26,9 @@ const UserMenu = () => {
     <Button
       variant="ghost"
       size="icon"
-      className={`hover:bg-primary/10 flex items-center gap-2 ${isLoggedIn ? "text-green-600" : ""}`}
+      className="hover:bg-primary/10 flex items-center gap-2 text-green-600"
     >
-      <UserIcon
-        className="h-5 w-5"
-        fill={isLoggedIn ? "currentColor" : "none"}
-      />
+      <UserIcon className="h-5 w-5" fill="currentColor" />
     </Button>
   )
 
@@ -48,12 +44,11 @@ const UserMenu = () => {
   }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{userButton}</DialogTrigger>
-      <DialogContent className="w-[90%]">
-        <SignInDialog />
-      </DialogContent>
-    </Dialog>
+    <Button variant="ghost" size="icon" asChild>
+      <Link href="/login" aria-label="Entrar" className="hover:bg-primary/10">
+        <UserIcon className="h-5 w-5" />
+      </Link>
+    </Button>
   )
 }
 

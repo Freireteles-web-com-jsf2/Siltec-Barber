@@ -136,7 +136,7 @@ TEST_LOGIN_ENABLED=true
 TEST_LOGIN_PASSWORD=<senha-de-teste-escolhida>
 ```
 
-Com a flag ligada, o seed cria 3 contas de teste e a rota [`/login`](<../app/(customer)/login/page.tsx>) passa a aceitar e-mail/senha (a senha é definida por `TEST_LOGIN_PASSWORD` e não fica no repositório):
+Com a flag ligada, o seed cria 3 contas de teste e o formulário de e-mail/senha da rota [`/login`](<../app/(customer)/login/page.tsx>) é habilitado (a senha é definida por `TEST_LOGIN_PASSWORD` e não fica no repositório). Sem a flag, a página continua existindo e mostra apenas o botão **Entrar com Google**:
 
 | Conta               | Perfil                | Dados                                                         |
 | ------------------- | --------------------- | ------------------------------------------------------------- |
@@ -144,7 +144,7 @@ Com a flag ligada, o seed cria 3 contas de teste e a rota [`/login`](<../app/(cu
 | `vazio@teste.dev`   | Cliente               | **Zero reservas** — alimenta o teste de estado vazio          |
 | `admin@teste.dev`   | Admin da 1ª barbearia | Painel, agenda, serviços e configurações                      |
 
-⚠️ Nunca habilite `TEST_LOGIN_ENABLED` em produção: a action é inerte sem a flag, mas não tem rate limit próprio e é um bypass do Google OAuth. Mais detalhes no [PRD §13](./PRD-Siltec-Barber.md).
+⚠️ Nunca habilite `TEST_LOGIN_ENABLED` em produção: a action é inerte sem a flag, mas não tem rate limit próprio e é um bypass do Google OAuth. A flag apenas esconde/exibe o formulário — ela não é o que protege a action. Mais detalhes no [PRD §13](./PRD-Siltec-Barber.md).
 
 ## ✅ Verificações
 

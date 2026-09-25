@@ -12,10 +12,8 @@ import { SheetClose, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet"
 import { quickSearchOptions } from "../_constants/search"
 import Link from "next/link"
 import Image from "next/image"
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog"
 import { signOut, useSession } from "next-auth/react"
 import { Avatar, AvatarImage } from "./ui/avatar"
-import SignInDialog from "./sign-in-dialog"
 import AdminPanelLink from "./admin-panel-link"
 
 interface SidebarSheetProps {
@@ -47,16 +45,13 @@ const SidebarSheet = ({ singleTenant = false }: SidebarSheetProps) => {
         ) : (
           <>
             <h2 className="font-bold">Olá, faça seu login!</h2>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button size="icon">
+            <SheetClose asChild>
+              <Button size="icon" asChild aria-label="Entrar">
+                <Link href="/login">
                   <LogInIcon />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="w-[90%]">
-                <SignInDialog />
-              </DialogContent>
-            </Dialog>
+                </Link>
+              </Button>
+            </SheetClose>
           </>
         )}
       </div>
