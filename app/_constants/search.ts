@@ -1,3 +1,4 @@
+// Validacao da integracao TestSprite CI (commit de teste)
 interface QuickSearchOption {
   imageUrl: string
   title: string
