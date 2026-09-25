@@ -1,0 +1,141 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@layer base {
+  .dark {
+    --background: 225 9% 9%;
+    --foreground: 210 40% 98%;
+
+    --card: 228 9% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 140 10% 14%;
+    --popover-foreground: 140 30% 95%;
+
+    --primary: 140 70% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 140 15% 20%;
+    --secondary-foreground: 140 30% 95%;
+
+    --muted: 140 15% 20%;
+    --muted-foreground: 140 20% 70%;
+
+    --accent: 140 15% 20%;
+    --accent-foreground: 140 30% 95%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 140 30% 95%;
+
+    --border: 140 15% 20%;
+    --input: 140 15% 20%;
+    --ring: 140 60% 70%;
+
+    --radius: 0.5rem;
+  }
+}
+
+
+@layer base {
+  * {
+    @apply border-border antialiased;
+  }
+  html {
+    @apply h-full;
+  }
+  body {
+    @apply h-full bg-background text-foreground;
+  }
+}
+.driver-popover.driver-popover {
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  max-width: 20rem;
+}
+
+.driver-popover-title.driver-popover-title {
+  color: hsl(var(--foreground));
+}
+
+.driver-popover-description.driver-popover-description {
+  color: hsl(var(--muted-foreground));
+}
+
+.driver-popover-progress-text.driver-popover-progress-text {
+  color: hsl(var(--muted-foreground));
+}
+
+.driver-popover-arrow-side-left.driver-popover-arrow-side-left { border-left-color: hsl(var(--popover)); }
+.driver-popover-arrow-side-right.driver-popover-arrow-side-right { border-right-color: hsl(var(--popover)); }
+.driver-popover-arrow-side-top.driver-popover-arrow-side-top { border-top-color: hsl(var(--popover)); }
+.driver-popover-arrow-side-bottom.driver-popover-arrow-side-bottom { border-bottom-color: hsl(var(--popover)); }
+
+.driver-popover-navigation-btns.driver-popover-navigation-btns button {
+  background-color: transparent;
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) - 2px);
+  text-shadow: none;
+}
+
+.driver-popover-navigation-btns.driver-popover-navigation-btns button:hover {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.driver-popover-close-btn.driver-popover-close-btn {
+  color: hsl(var(--muted-foreground));
+}

@@ -1,0 +1,1595 @@
+[
+  {
+    "id": "TC001",
+    "title": "Reserve a service with a logged-in customer",
+    "description": "An authenticated customer can choose a future date and available time slot, confirm the reservation, and see the success confirmation with the WhatsApp action.",
+    "category": "Create a booking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Open a barbershop detail page"
+      },
+      {
+        "type": "action",
+        "description": "Click the reserve action for a service"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid future date"
+      },
+      {
+        "type": "action",
+        "description": "Select an available time slot"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the reservation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a booking success confirmation is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a WhatsApp confirmation action is available"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Explorar a vitrine inicial e abrir uma barbearia",
+    "description": "Verifica que o visitante vê a vitrine inicial com destaque e consegue abrir uma barbearia a partir da home.",
+    "category": "Browse barbershop catalog home",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the welcome heading and the current date are visible"
+      },
+      {
+        "type": "action",
+        "description": "Click a barbershop card"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the barbershop detail page is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Start booking from a service while logged out",
+    "description": "A visitor who tries to reserve a service without being signed in sees the sign-in dialog instead of starting a booking.",
+    "category": "Sign-in dialog for booking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Open a barbershop detail page"
+      },
+      {
+        "type": "action",
+        "description": "Click the reserve action for a service"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the sign-in dialog is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the barbershop page is still visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "See login required message on bookings page",
+    "description": "A logged-out visitor sees that access to bookings is restricted and is prompted to log in.",
+    "category": "View my bookings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /bookings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a login required message is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the bookings dashboard content is not shown"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Buscar barbearias por nome",
+    "description": "Verifica que a busca na listagem encontra barbearias correspondentes ao termo digitado.",
+    "category": "Search and filter barbershops",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the search field with a valid barbershop name"
+      },
+      {
+        "type": "action",
+        "description": "Submit the search form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify matching barbershops are shown"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the results header reflects the search"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Open a barbershop detail page and review its information",
+    "description": "A visitor can open a barbershop and see its services, opening hours, and contact information.",
+    "category": "Barbershop details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Open a barbershop detail page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the barbershop about information is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the service list, opening hours, and contact details are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Abrir a página de detalhes e ler serviços, horários e contato",
+    "description": "Verifica que a página de detalhes mostra informações da barbearia, serviços, horários de funcionamento e contatos.",
+    "category": "View barbershop detail and services",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Click a barbershop card"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the services section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the services list is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the opening hours and contact information are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Open Google sign-in from the booking dialog",
+    "description": "A visitor can open the sign-in dialog from a service reservation attempt and choose Google to begin authentication.",
+    "category": "Sign-in dialog for booking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Open a barbershop detail page"
+      },
+      {
+        "type": "action",
+        "description": "Click the reserve action for a service"
+      },
+      {
+        "type": "action",
+        "description": "Choose the Google sign-in option"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the authentication flow is started"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the sign-in dialog is no longer the active overlay"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "View the barbershop catalog home",
+    "description": "A visitor landing on the home page can explore the catalog and see featured barbershop listings.",
+    "category": "Customer home catalog",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify barbershop listings are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify featured or recommended barbershops are visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "Review upcoming bookings history and totals",
+    "description": "An authenticated customer can review upcoming bookings, history, and summary totals on the bookings page.",
+    "category": "View my bookings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /bookings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify upcoming bookings are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify booking history is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify booking summary totals are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "Search and browse the full barbershop list",
+    "description": "A visitor can open the full listing, search for barbershops, and see the matching results count update.",
+    "category": "Barbershop listing",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Type a search term into the search field"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify matching barbershops are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the results count updates"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC012",
+    "title": "Usar um atalho de serviço na home",
+    "description": "Verifica que um atalho de serviço leva o visitante para a listagem filtrada de barbearias.",
+    "category": "Browse barbershop catalog home",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click a quick service shortcut"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the filtered barbershop listing is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify matching barbershops are shown"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC013",
+    "title": "Abrir a listagem completa a partir da home",
+    "description": "Verifica que o visitante consegue acessar a listagem completa de barbearias a partir de destaques da home.",
+    "category": "Browse barbershop catalog home",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to view all recommended barbershops"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the full barbershop listing is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify barbershop results are shown"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC014",
+    "title": "View the bookings dashboard as a customer",
+    "description": "A signed-in customer can open their bookings page and see upcoming bookings, history, and totals.",
+    "category": "Customer bookings dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /bookings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify upcoming bookings are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify booking history and totals are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC015",
+    "title": "Save a contact phone number in profile",
+    "description": "An authenticated customer can open their profile and save a contact phone number successfully.",
+    "category": "Update profile phone",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /perfil"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the profile form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success confirmation is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the saved phone number is shown"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC016",
+    "title": "Remove a booking from the customer dashboard",
+    "description": "A signed-in customer can delete one of their bookings from the bookings page and see it disappear from the list.",
+    "category": "Customer bookings dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /bookings"
+      },
+      {
+        "type": "action",
+        "description": "Remove one booking from the list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the booking is no longer visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the bookings page remains visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC017",
+    "title": "Remove a booking from the bookings page",
+    "description": "An authenticated customer can delete an upcoming booking and see it disappear from the list.",
+    "category": "View my bookings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /bookings"
+      },
+      {
+        "type": "action",
+        "description": "Remove a booking from a booking card"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the removed booking no longer appears"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the bookings list still displays"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC018",
+    "title": "See empty bookings state when there are no bookings",
+    "description": "An authenticated customer with no bookings sees the empty state and can start the discovery flow.",
+    "category": "View my bookings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /bookings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the heading \"Nenhum agendamento encontrado\" is visible and the statistics dashboard is not displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the \"Agendar Agora\" call to action linking to /barbershops is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC019",
+    "title": "Update the contact phone in the profile",
+    "description": "A signed-in customer can save a new contact phone number on the profile page and see the saved profile state.",
+    "category": "Customer profile",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /perfil"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the contact phone field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Save the profile"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the profile save confirmation is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the saved phone number is reflected on the page"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC020",
+    "title": "Search barbershops from the header",
+    "description": "A visitor can open the header search, filter the page content, and see the matching results update.",
+    "category": "Header navigation and menu",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Open the header search"
+      },
+      {
+        "type": "action",
+        "description": "Type a barbershop name or service into the search field"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the list is filtered to matching results"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify non-matching results are hidden"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC021",
+    "title": "Use the shared header to navigate the site",
+    "description": "A visitor can use the global header to move between the home page and key public sections.",
+    "category": "Header navigation and menu",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the barbershop listing"
+      },
+      {
+        "type": "action",
+        "description": "Click the logo link"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the home page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the shared header navigation is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC022",
+    "title": "Read contact options and policy links on the contact page",
+    "description": "A visitor can use the contact page to reach WhatsApp, email, and the privacy policy.",
+    "category": "Institutional static pages",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contato"
+      },
+      {
+        "type": "action",
+        "description": "Click the WhatsApp contact link"
+      },
+      {
+        "type": "action",
+        "description": "Navigate back to /contato"
+      },
+      {
+        "type": "action",
+        "description": "Click the email contact link"
+      },
+      {
+        "type": "action",
+        "description": "Navigate back to /contato"
+      },
+      {
+        "type": "action",
+        "description": "Click the privacy policy link"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the privacy policy page is shown"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC023",
+    "title": "Ver estado vazio quando não houver resultados",
+    "description": "Verifica que uma busca sem correspondências mostra o estado vazio com opções de recuperação.",
+    "category": "Search and filter barbershops",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the search field with a term that has no matches"
+      },
+      {
+        "type": "action",
+        "description": "Submit the search form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the empty state message is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify recovery options are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC024",
+    "title": "Close the booking sign-in dialog",
+    "description": "A visitor can dismiss the booking sign-in dialog and return to the barbershop page without starting authentication.",
+    "category": "Sign-in dialog for booking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Open a barbershop detail page"
+      },
+      {
+        "type": "action",
+        "description": "Click the reserve action for a service"
+      },
+      {
+        "type": "action",
+        "description": "Close the sign-in dialog"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the barbershop detail page is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the sign-in dialog is not visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC025",
+    "title": "Open the mobile navigation menu and choose a destination",
+    "description": "A visitor can open the global menu on the site and navigate to a public section from it.",
+    "category": "Header navigation and menu",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Open the navigation menu"
+      },
+      {
+        "type": "action",
+        "description": "Choose the link to the about page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the about page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the menu is closed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC026",
+    "title": "Prevent booking on a past date",
+    "description": "An authenticated customer cannot choose a past date in the reservation flow and sees that past dates are disabled.",
+    "category": "Create a booking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Open a barbershop detail page"
+      },
+      {
+        "type": "action",
+        "description": "Click the reserve action for a service"
+      },
+      {
+        "type": "action",
+        "description": "Open the date picker"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify past dates are disabled"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC027",
+    "title": "Use contact links from the barbershop detail page",
+    "description": "A visitor can open the contact options on a barbershop page and reach the available phone or messaging actions.",
+    "category": "Barbershop details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Open a barbershop detail page"
+      },
+      {
+        "type": "action",
+        "description": "Open a contact link"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a contact action is available"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the barbershop detail page remains accessible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC028",
+    "title": "Validar busca vazia na listagem",
+    "description": "Verifica que a listagem impede uma busca sem termo e mostra a validação correspondente.",
+    "category": "Search and filter barbershops",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Submit the search form without entering a term"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a search validation error is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC029",
+    "title": "Handle an occupied booking slot",
+    "description": "An authenticated customer sees conflict feedback when trying to book a time slot that is already unavailable.",
+    "category": "Create a booking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Open a barbershop detail page"
+      },
+      {
+        "type": "action",
+        "description": "Click the reserve action for a service"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid future date"
+      },
+      {
+        "type": "action",
+        "description": "Select an occupied time slot"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify booking conflict feedback is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC030",
+    "title": "Open barbershop discovery from bookings",
+    "description": "An authenticated customer can use the bookings page to start browsing barbershops.",
+    "category": "View my bookings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /bookings"
+      },
+      {
+        "type": "action",
+        "description": "Choose the booking discovery call to action"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the barbershop discovery page is shown"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC031",
+    "title": "View the institutional pages",
+    "description": "A visitor can open the static institutional pages from the public site.",
+    "category": "Institutional pages",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sobre"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the about page is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /contato"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the contact page is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /termos"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the terms page is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC032",
+    "title": "Abrir um contato telefônico da barbearia",
+    "description": "Verifica que o visitante consegue acessar uma opção de contato telefônico na página de detalhes.",
+    "category": "View barbershop detail and services",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Click a barbershop card"
+      },
+      {
+        "type": "action",
+        "description": "Click a contact phone option"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the phone contact option is available"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC033",
+    "title": "Read the institutional pages from the site",
+    "description": "A visitor can open each institutional page and see its content using the header navigation.",
+    "category": "Institutional static pages",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sobre"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the about page content is visible"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /carreiras"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the careers page content is visible"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /parceiros"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the partners page content is visible"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /privacidade"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the privacy policy content is visible"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /termos"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the terms of use content is visible"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /cookies"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cookie policy content is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC034",
+    "title": "Show an empty state when no barbershops match",
+    "description": "A visitor searching for an unavailable term sees an empty state instead of results.",
+    "category": "Barbershop listing",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Type a search term that matches nothing"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state message is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify no barbershop cards are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC035",
+    "title": "Exibir a página 404 para barbearia inexistente",
+    "description": "Verifica que abrir uma barbearia inexistente mostra a página de não encontrado.",
+    "category": "View barbershop detail and services",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /barbershops"
+      },
+      {
+        "type": "action",
+        "description": "Click a barbershop card with an invalid identifier if available through the list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the not-found page is displayed"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC036",
+    "title": "Admin login lands on the dashboard",
+    "description": "An authenticated barber admin signs in through /login and is redirected to /dashboard with greeting and metric cards.",
+    "category": "Admin dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the redirect after login"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the URL contains /dashboard and the greeting 'Olá, Admin!' is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the metric cards 'Agendamentos', 'Faturamento previsto', 'Concluídos' and 'Faltas e cancelamentos' are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the section heading 'Atendimentos do dia' is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC037",
+    "title": "Navigate between days on the admin dashboard",
+    "description": "The admin moves to the next day with the day navigator, sees the day view, and returns to today with the 'Hoje' button.",
+    "category": "Admin dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify today's greeting 'Olá, Admin!' is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the 'Próximo dia' button (right chevron)"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the page eyebrow changes to 'Visão do dia' (not today anymore)"
+      },
+      {
+        "type": "action",
+        "description": "Click the 'Hoje' button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the greeting returns to 'Olá, Admin!' for today's view"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC038",
+    "title": "See today's appointment with status actions",
+    "description": "The dashboard agenda lists today's seeded booking with its status badge and the available attendance actions.",
+    "category": "Admin dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a booking row for the service 'Corte de Cabelo' at 18:30 is listed under 'Atendimentos do dia'"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the booking row shows the status badge 'Confirmado'"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the action buttons 'Concluir', 'Faltou' and 'Cancelar' are visible for the confirmed booking (do not click them)"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC039",
+    "title": "View the schedule page timeline",
+    "description": "The Agenda page shows the calendar, the block manager and the day timeline containing today's booking.",
+    "category": "Admin schedule",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /schedule"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the heading 'Gestão de horários' is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the month calendar is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the 'Bloqueios do dia' card with the 'Bloquear' button is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the timeline lists the 18:30 'Corte de Cabelo' booking with the customer name"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC040",
+    "title": "Create and remove a schedule block",
+    "description": "The admin blocks the lunch hour on today's schedule with a preset and then removes the block, leaving the day clean.",
+    "category": "Admin schedule",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /schedule"
+      },
+      {
+        "type": "action",
+        "description": "Click the 'Bloquear' button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dialog 'Bloquear horário' opens for today's date"
+      },
+      {
+        "type": "action",
+        "description": "Click the 'Almoço' preset button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the start time is 12:00 and the end time is 13:00"
+      },
+      {
+        "type": "action",
+        "description": "Click the 'Bloquear' confirm button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the success toast 'Horário bloqueado.' appears"
+      },
+      {
+        "type": "action",
+        "description": "Verify the 12:00 – 13:00 block card is now listed under 'Bloqueios do dia'"
+      },
+      {
+        "type": "action",
+        "description": "Click the 'Remover bloqueio' button of that block"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the success toast 'Bloqueio removido.' appears"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the empty message 'Nenhum bloqueio nesse dia.' is displayed again"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC041",
+    "title": "Review the services catalog overview",
+    "description": "The services page shows catalog metrics and the list of seeded services with price and duration.",
+    "category": "Admin services",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /services"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the heading 'Serviços' with the eyebrow 'Catálogo' is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the metric cards 'Ativos', 'Preço médio' and 'Duração média' are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the service cards include 'Corte de Cabelo' and 'Barba' with their prices"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the 'Novo serviço' button and the services count heading are visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC042",
+    "title": "Create and then delete a service",
+    "description": "The admin creates a new service through the dialog and removes it afterwards to leave the catalog unchanged.",
+    "category": "Admin services",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /services"
+      },
+      {
+        "type": "action",
+        "description": "Click the 'Novo serviço' button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dialog 'Novo serviço' opens"
+      },
+      {
+        "type": "action",
+        "description": "Fill the name field with 'Corte Teste Sprite' and the description with 'Serviço criado pelo teste automatizado.'"
+      },
+      {
+        "type": "action",
+        "description": "Fill the price field (Preço (R$)) with 50"
+      },
+      {
+        "type": "action",
+        "description": "Choose 30 in the duration select (Duração) and fill the image URL field with https://utfs.io/f/c97a2dc9-cf62-468b-a851-bfd2bdde775f-16p.png"
+      },
+      {
+        "type": "action",
+        "description": "Click the 'Criar serviço' button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the success toast 'Serviço criado.' appears"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a new service card named 'Corte Teste Sprite' is listed"
+      },
+      {
+        "type": "action",
+        "description": "Click the delete button with aria-label 'Excluir Corte Teste Sprite'"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the confirmation dialog 'Excluir Corte Teste Sprite?' opens"
+      },
+      {
+        "type": "action",
+        "description": "Click the 'Excluir' button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the success toast 'Serviço excluído.' appears"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the 'Corte Teste Sprite' card is no longer listed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC043",
+    "title": "Deactivate and reactivate a service",
+    "description": "The admin toggles the active switch of a service off and back on, confirming both state-change toasts.",
+    "category": "Admin services",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /services"
+      },
+      {
+        "type": "action",
+        "description": "In the service card 'Sobrancelha', click the switch labeled 'Desativar serviço'"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the toast 'Serviço desativado.' appears and the card becomes dimmed"
+      },
+      {
+        "type": "action",
+        "description": "In the same 'Sobrancelha' card, click the switch labeled 'Ativar serviço'"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the toast 'Serviço ativado.' appears"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC044",
+    "title": "Save the barbershop profile in settings",
+    "description": "The settings page shows the seeded shop data prefilled and saving without changes succeeds.",
+    "category": "Admin settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the section heading 'Dados da barbearia' is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the name field is prefilled with 'Barbearia Vintage'"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify at least one phone field and the 'Salvar dados' button are visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the 'Salvar dados' button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the success toast 'Dados da barbearia salvos.' appears"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC045",
+    "title": "Save the opening hours in settings",
+    "description": "The opening hours form lists all weekdays and saving the schedule succeeds with a confirmation toast.",
+    "category": "Admin settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the login credentials with {{LOGIN_USER}} and {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings"
+      },
+      {
+        "type": "action",
+        "description": "Scroll down to the 'Horário de funcionamento' section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify weekday rows from 'Domingo' to 'Sábado' are displayed with time inputs"
+      },
+      {
+        "type": "action",
+        "description": "Click the 'Salvar horários' button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the success toast 'Horário de funcionamento salvo.' appears"
+      }
+    ],
+    "priority": "Medium"
+  }
+]
